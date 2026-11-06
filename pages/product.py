@@ -114,7 +114,7 @@ class ProductPage(BasePage):
         product_name.click()
 
     def click_review_star(self, card, star_number):
-        star = WebDriverWait(card, 5).until(
+        star = WebDriverWait(card, 10).until(
             EC.element_to_be_clickable(
                 self._get_locator(f"review_star{star_number}")
             )

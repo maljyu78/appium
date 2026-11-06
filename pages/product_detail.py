@@ -20,7 +20,11 @@ class ProductDetailPage(BasePage):
 
         elif self.platform == "ios":
             locators = {
-                "product_detail_name": (AppiumBy.ACCESSIBILITY_ID, "container header"),
+                "product_detail_name": (
+                    AppiumBy.ANDROID_UIAUTOMATOR,
+                    'new UiSelector().description("container header")'
+                    '.childSelector(new UiSelector().className("android.widget.TextView"))'
+                ),
                 "product_detail_price": (AppiumBy.ACCESSIBILITY_ID, "product price"),
                 "back_button": (AppiumBy.ACCESSIBILITY_ID, "Back"),
             }
