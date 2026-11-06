@@ -1,0 +1,64 @@
+# =========================
+# Python Cache
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+
+# =========================
+# Virtual Environment
+# =========================
+venv/
+.venv/
+env/
+
+# =========================
+# IDE
+# =========================
+.idea/
+
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# =========================
+# Test Reports
+# =========================
+allure-results/
+allure-report/
+test-results/
+reports/
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# Environment Variables
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================
+# Temporary Files
+# =========================
+*.tmp
+*.bak
+
+# =========================
+# Coverage
+# =========================
+.coverage
+htmlcov/
