@@ -5,11 +5,15 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support import expected_conditions as EC
 from pages.base import BasePage
 from pages.components.header import Header
+from pages.components.header import SortButton
+from pages.components.header import SideMenu
 
 class ProductPage(BasePage):
     def __init__(self, driver):
         super().__init__(driver)
         self.header = Header(driver)
+        self.sort = SortButton(driver)
+        self.side = SideMenu(driver)
 
     # Locator
     def _get_locator(self, name):
@@ -94,6 +98,65 @@ class ProductPage(BasePage):
             self.scroll_down()
             scroll_count += 1
 
+    def _get_visible_product_names(self):
+        cards = self.driver.find_elements(
+            *self._get_locator("product_cards")
+        )
+
+        names = []
+
+        for card in cards:
+            name_elements = card.find_elements(
+                *self._get_locator("product_names")
+            )
+
+            if name_elements:
+                name = name_elements[0].text.strip()
+
+                if name:
+                    names.append(name)
+
+        return names
+
+
+    def get_all_products_info(self):
+        products = []
+        collected_names = set()
+
+        self.wait.until(
+            EC.presence_of_all_elements_located(
+                self._get_locator("product_cards")
+            )
+        )
+
+        while True:
+            cards = self.driver.find_elements(
+                *self._get_locator("product_cards")
+            )
+
+            for card in cards:
+                product = self.get_product_info(card)
+                name = product["name"]
+
+                if name and name not in collected_names:
+                    products.append(product)
+                    collected_names.add(name)
+
+            self.scroll_down()
+
+            try:
+                WebDriverWait(self.driver, 10).until(
+                    lambda driver: any(
+                        name not in collected_names
+                        for name in self._get_visible_product_names()
+                    )
+                )
+
+            except TimeoutException:
+                break
+
+        return products
+
     def get_product_info(self, card):
         names = card.find_elements(
             *self._get_locator("product_names")
@@ -136,3 +199,16 @@ class ProductPage(BasePage):
 
     def click_close_modal(self):
         self.click(self._get_locator("close_modal_button"))    
+
+    def click_sort_button(self):
+        self.header.click_sort_button()
+
+    def check_sort_menu(self, sort_button_names):
+        element = self.sort.find_sort_button(sort_button_names)
+        
+        return element.is_displayed()
+    
+    def click_sort_menu_buttons(self, sort_button_names):
+        self.click(self.sort._get_locator(sort_button_names))
+        actual_products = self.get_all_products_info()
+        return actual_products

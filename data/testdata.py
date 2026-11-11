@@ -18,3 +18,11 @@ class ProductData:
         {"id": "onesie", "name": "Sauce Labs Onesie", "price": "7.99"},
         {"id": "red_tshirt", "name": "Test.allTheThings() T-Shirt", "price": "15.99"}
     ]
+
+class SortMenu:
+    button_names = [
+        "name_asc",
+        "name_desc",
+        "price_asc",
+        "price_desc"
+    ]

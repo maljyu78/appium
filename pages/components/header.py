@@ -17,22 +17,23 @@ class Header(BasePage):
                 "cart_badge": (AppiumBy.ACCESSIBILITY_ID, "cart badge"),
                 "menu_button": (AppiumBy.ACCESSIBILITY_ID, "open menu"),
             }
+        elif self.platform == "ios":
+            locators = {
+            "sort_button": (AppiumBy.ACCESSIBILITY_ID, "sort button"),
+            "cart_badge": (AppiumBy.ACCESSIBILITY_ID, "cart badge"),
+            "menu_button": (AppiumBy.ACCESSIBILITY_ID, "open menu"),
+            }
 
         return locators[name]
 
-    def _get_locator(self, name):
-            if self.platform == "ios":
-                locators = {
-                "sort_button": (AppiumBy.ACCESSIBILITY_ID, "sort button"),
-                "cart_badge": (AppiumBy.ACCESSIBILITY_ID, "cart badge"),
-                "menu_button": (AppiumBy.ACCESSIBILITY_ID, "open menu"),
-                }
-    
-            return locators[name]
-
     # Action
     def click_sort_button(self):
-        self.click(self._get_locator("sort_button"))
+        sort_btn = WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable(
+                self._get_locator("sort_button")
+            )
+        )
+        sort_btn.click()
 
     def click_cart_badge(self):
         self.click(self._get_locator("cart_badge"))
@@ -48,29 +49,31 @@ class SortButton(BasePage):
     def _get_locator(self, name):
         if self.platform == "android":
             locators = {
-                "sort_button": (AppiumBy.ACCESSIBILITY_ID, "sort button"),
                 "name_asc": (AppiumBy.ACCESSIBILITY_ID, "nameAsc"),
                 "name_desc": (AppiumBy.ACCESSIBILITY_ID, "nameDesc"),
                 "price_asc": (AppiumBy.ACCESSIBILITY_ID, "priceAsc"),
                 "price_desc": (AppiumBy.ACCESSIBILITY_ID, "priceDesc"),
             }
 
+        elif self.platform == "ios":
+            locators = {
+            "name_asc": (AppiumBy.ACCESSIBILITY_ID, "nameAsc"),
+            "name_desc": (AppiumBy.ACCESSIBILITY_ID, "nameDesc"),
+            "price_asc": (AppiumBy.ACCESSIBILITY_ID, "priceAsc"),
+            "price_desc": (AppiumBy.ACCESSIBILITY_ID, "priceDesc"),
+            }
+
         return locators[name]
 
-    def _get_locator(self, name):
-            if self.platform == "ios":
-                locators = {
-                "sort_button": (AppiumBy.ACCESSIBILITY_ID, "sort button"),
-                "name_asc": (AppiumBy.ACCESSIBILITY_ID, "nameAsc"),
-                "name_desc": (AppiumBy.ACCESSIBILITY_ID, "nameDesc"),
-                "price_asc": (AppiumBy.ACCESSIBILITY_ID, "priceAsc"),
-                "price_desc": (AppiumBy.ACCESSIBILITY_ID, "priceDesc"),
-                }
-    
-            return locators[name]
-
     # Action
+    def find_sort_button(self, button_name):
+        element = self.find_element(self._get_locator(button_name))
+        print(f"[DEBUG] {button_name}: {element is not None}")
+
+        return element
+
     def click_name_asc(self):
+        
         self.click(self._get_locator("name_asc"))
 
     def click_name_desc(self):
@@ -104,26 +107,23 @@ class SideMenu(BasePage):
                 "menu_sauce_bot_video": (AppiumBy.ACCESSIBILITY_ID, "menu item sauce bot video"),
             }
 
+        elif self.platform == "ios":
+            locators = {
+            "menu_catalog": (AppiumBy.ACCESSIBILITY_ID, "menu item catalog"),
+            "menu_webview": (AppiumBy.ACCESSIBILITY_ID, "menu item webview"),
+            "menu_qr_scan": (AppiumBy.ACCESSIBILITY_ID, "menu item qr code scanner"),
+            "menu_geo_location": (AppiumBy.ACCESSIBILITY_ID, "menu item geo location"),
+            "menu_drawing": (AppiumBy.ACCESSIBILITY_ID, "menu item drawing"),
+            "menu_about": (AppiumBy.ACCESSIBILITY_ID, "menu item about"),
+            "menu_reset_app_state": (AppiumBy.ACCESSIBILITY_ID, "menu item reset app"),
+            "menu_finger_print": (AppiumBy.ACCESSIBILITY_ID, "menu item biometrics"),
+            "menu_login": (AppiumBy.ACCESSIBILITY_ID, "menu item log in"),
+            "menu_logout": (AppiumBy.ACCESSIBILITY_ID, "menu item log out"),
+            "menu_api_calls": (AppiumBy.ACCESSIBILITY_ID, "menu item api calls"),
+            "menu_sauce_bot_video": (AppiumBy.ACCESSIBILITY_ID, "menu item sauce bot video"),
+            }
+
         return locators[name]
-
-    def _get_locator(self, name):
-            if self.platform == "ios":
-                locators = {
-                "menu_catalog": (AppiumBy.ACCESSIBILITY_ID, "menu item catalog"),
-                "menu_webview": (AppiumBy.ACCESSIBILITY_ID, "menu item webview"),
-                "menu_qr_scan": (AppiumBy.ACCESSIBILITY_ID, "menu item qr code scanner"),
-                "menu_geo_location": (AppiumBy.ACCESSIBILITY_ID, "menu item geo location"),
-                "menu_drawing": (AppiumBy.ACCESSIBILITY_ID, "menu item drawing"),
-                "menu_about": (AppiumBy.ACCESSIBILITY_ID, "menu item about"),
-                "menu_reset_app_state": (AppiumBy.ACCESSIBILITY_ID, "menu item reset app"),
-                "menu_finger_print": (AppiumBy.ACCESSIBILITY_ID, "menu item biometrics"),
-                "menu_login": (AppiumBy.ACCESSIBILITY_ID, "menu item log in"),
-                "menu_logout": (AppiumBy.ACCESSIBILITY_ID, "menu item log out"),
-                "menu_api_calls": (AppiumBy.ACCESSIBILITY_ID, "menu item api calls"),
-                "menu_sauce_bot_video": (AppiumBy.ACCESSIBILITY_ID, "menu item sauce bot video"),
-                }
-
-            return locators[name]
 
     # Action
     def click_catalog(self):
