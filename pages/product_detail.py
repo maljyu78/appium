@@ -16,6 +16,7 @@ class ProductDetailPage(BasePage):
                 ),
                 "product_detail_price": (AppiumBy.ACCESSIBILITY_ID, "product price"),
                 "back_button": (AppiumBy.ACCESSIBILITY_ID, "Back"),
+                "add_to_cart": (AppiumBy.ACCESSIBILITY_ID, "Add To Cart button"),
             }
 
         elif self.platform == "ios":
@@ -27,6 +28,7 @@ class ProductDetailPage(BasePage):
                 ),
                 "product_detail_price": (AppiumBy.ACCESSIBILITY_ID, "product price"),
                 "back_button": (AppiumBy.ACCESSIBILITY_ID, "Back"),
+                "add_to_cart": (AppiumBy.ACCESSIBILITY_ID, "Add To Cart button"),
             }
         return locators[name]
 
@@ -43,3 +45,8 @@ class ProductDetailPage(BasePage):
             "name": name.text.strip(),
             "price": price.text.strip()
         }
+
+    def click_add_cart(self):
+        self.find_element(
+            self._get_locator("add_to_cart")
+        ).click()

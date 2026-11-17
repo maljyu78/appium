@@ -6,20 +6,21 @@ from selenium.webdriver.support import expected_conditions as EC
 from pages.base import BasePage
 from pages.components.header import Header
 from pages.components.header import SortButton
-from pages.components.header import SideMenu
+from pages.components.header import SideMenuButton
 
 class ProductPage(BasePage):
     def __init__(self, driver):
         super().__init__(driver)
         self.header = Header(driver)
         self.sort = SortButton(driver)
-        self.side = SideMenu(driver)
+        self.side = SideMenuButton(driver)
 
     # Locator
     def _get_locator(self, name):
         if self.platform == "android":
             locators = {
-                "product_title": (AppiumBy.ACCESSIBILITY_ID, "container header"),
+                "container": (AppiumBy.ACCESSIBILITY_ID, "container header"),
+                "textview": (AppiumBy.CLASS_NAME, "android.widget.TextView"),
                 "product_cards": (AppiumBy.ACCESSIBILITY_ID, "store item"),
                 "product_names": (AppiumBy.ACCESSIBILITY_ID, "store item text"),
                 "product_prices": (AppiumBy.ACCESSIBILITY_ID, "store item price"),
@@ -34,6 +35,7 @@ class ProductPage(BasePage):
         elif self.platform == "ios":
             locators = {
                 "product_title": (AppiumBy.ACCESSIBILITY_ID, "Products"),
+                "textview": (AppiumBy.CLASS_NAME, "android.widget.TextView"),
                 "product_cards": (AppiumBy.ACCESSIBILITY_ID, "store item"),
                 "product_names": (AppiumBy.ACCESSIBILITY_ID, "store item text"),
                 "product_prices": (AppiumBy.ACCESSIBILITY_ID, "store item price"),
@@ -50,11 +52,24 @@ class ProductPage(BasePage):
     def catalog_displayed(self):
         try:
             return self.find_element(
-                self._get_locator("product_title")
+                self._get_locator("container")
                 ).is_displayed()
         except Exception:
             return False
 
+    def get_title_name(self):
+        container = self.wait.until(
+            EC.visibility_of_element_located(
+                self._get_locator("container")
+            )
+        )
+
+        title_name = container.find_element(
+            *self._get_locator("textview")
+        )
+
+        return title_name.text
+    
     def find_product_card(self, product_name):
         max_scrolls = 10
         scroll_count = 0
@@ -170,7 +185,7 @@ class ProductPage(BasePage):
             "price": prices[0].text.strip() if prices else None
         }
 
-    def click_all_product(self, product_card):
+    def click_product(self, product_card):
         product_name = product_card.find_element(
             *self._get_locator("product_names")
         )
@@ -212,3 +227,22 @@ class ProductPage(BasePage):
         self.click(self.sort._get_locator(sort_button_names))
         actual_products = self.get_all_products_info()
         return actual_products
+
+    def open_side_menu(self):
+        self.header.click_side_menu()
+
+    def check_side_menu(self, button_names):
+        element = self.side.find_side_buttons(
+            button_names["locator_name"]
+        )
+
+        return element.is_displayed()
+
+    def click_menu(self, names):
+        self.side.click_menu(names)
+
+    def click_cart_badge(self):
+        self.header.click_cart_badge()
+
+    def check_cart_count(self):
+        return self.header.get_cart_count()

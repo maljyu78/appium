@@ -1,12 +1,22 @@
-class LoginData:
+class AccountData:
     vaild_user = {
-        "username": "",
-        "password": ""
+        "username": "bob@example.com",
+        "password": "10203040"
     }
 
+    wrong_id = {
+        "username": "bpb@example.com",
+        "password": "10203040"
+    }
+
+    wrong_pw = {
+            "username": "bob@example.com",
+            "password": "10203050"
+        }
+
     locked_user = {
-        "username": "",
-        "password": ""
+        "username": "alice@example.com",
+        "password": "10203040"
     }
 
 class ProductData:
@@ -25,4 +35,34 @@ class SortMenu:
         "name_desc",
         "price_asc",
         "price_desc"
+    ]
+
+class SideMenu:
+    button_names = [
+        {"name": "Catalog", "locator_name": "menu_catalog"},
+        {"name": "Webview", "locator_name": "menu_webview"},
+        {"name": "QR Scan", "locator_name": "menu_qr_scan"},
+        {"name": "Geo Location", "locator_name": "menu_geo_location"},
+        {"name": "Drawing", "locator_name": "menu_drawing"},
+        {"name": "About", "locator_name": "menu_about"},
+        {"name": "Reset", "locator_name": "menu_reset_app_state"},
+        {"name": "Finger Print", "locator_name": "menu_finger_print"},
+        {"name": "Login", "locator_name": "menu_login"},
+        {"name": "Logout", "locator_name": "menu_logout"},
+        {"name": "Api Calls", "locator_name": "menu_api_calls"},
+        {"name": "Bot Video", "locator_name": "menu_sauce_bot_video"},
+    ]
+
+class ContainerHeader:
+    names = [
+        "Products",
+        "Webview",
+        "QR Code Scanner",
+        "Geo Location",
+        "Drawing",
+        "About",
+        "FingerPrint",
+        "Login",
+        "API calls",
+        "SauceBot - The Beginning",
     ]
