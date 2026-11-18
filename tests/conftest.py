@@ -2,14 +2,21 @@ import pytest
 import subprocess
 import time
 import sys
+from pathlib import Path
+
 from appium import webdriver
 from appium.options.android import UiAutomator2Options
 from appium.options.ios import XCUITestOptions
 from appium.webdriver.appium_service import AppiumService
+from appium.webdriver.common.appiumby import AppiumBy
+
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from appium.webdriver.common.appiumby import AppiumBy
-from pathlib import Path
+
+from pages.product import ProductPage
+from pages.app import AppPage
+from pages.login import LoginPage
+from pages.product_detail import ProductDetailPage
 
 class OStype:
     ANDROID = "android"
@@ -38,7 +45,6 @@ def detect_current_platform():
             for line in result.stdout.splitlines():
                 parts = line.split()
 
-                # 예: emulator-5554    device
                 if len(parts) == 2 and parts[1] == "device":
                     devices.append(parts[0])
 
@@ -131,3 +137,19 @@ def driver(appium_server):
     yield driver
 
     driver.quit()
+
+@pytest.fixture(scope="function")
+def product_page(driver):
+    return ProductPage(driver)
+
+@pytest.fixture(scope="function")
+def login_page(driver):
+    return LoginPage(driver)
+
+@pytest.fixture(scope="function")
+def app_page(driver):
+    return AppPage(driver)
+
+@pytest.fixture(scope="function")
+def detail_page(driver):
+    return ProductDetailPage(driver)
