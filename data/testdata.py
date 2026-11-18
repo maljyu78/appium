@@ -49,9 +49,13 @@ class SideMenu:
         {"name": "Finger Print", "locator_name": "menu_finger_print"},
         {"name": "Login", "locator_name": "menu_login"},
         {"name": "Logout", "locator_name": "menu_logout"},
-        {"name": "Api Calls", "locator_name": "menu_api_calls"},
+        {"name": "API Calls", "locator_name": "menu_api_calls"},
         {"name": "Bot Video", "locator_name": "menu_sauce_bot_video"},
     ]
+    button_data = {
+        button["name"]: button
+        for button in button_names
+    }
 
 class ContainerHeader:
     names = [
