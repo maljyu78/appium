@@ -241,6 +241,9 @@ class ProductPage(BasePage):
     def click_menu(self, names):
         self.side.click_menu(names)
 
+    def find_cart_badge(self):
+        self.header.find_side_menu_button()
+
     def click_cart_badge(self):
         self.header.click_cart_badge()
 

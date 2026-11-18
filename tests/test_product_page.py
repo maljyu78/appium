@@ -1,8 +1,4 @@
 import pytest
-from pages.product import ProductPage
-from pages.app import AppPage
-from pages.login import LoginPage
-from pages.product_detail import ProductDetailPage
 from data.testdata import (
     ProductData,
     SortMenu,
@@ -12,17 +8,14 @@ from data.testdata import (
 )
 
 
-def test_id_001_products_title_displayed(driver):
-    product_page = ProductPage(driver)
+def test_id_001_products_title_displayed(product_page):
     expected_title_name = ContainerHeader.names[0]
     
     assert product_page.catalog_displayed() is True, "[F] product page undisplayed"
     assert product_page.get_title_name() == expected_title_name, \
         "[F] product page title name is wrong"
 
-def test_id_002_products_list_displayed(driver):
-    product_page = ProductPage(driver)
-
+def test_id_002_products_list_displayed(product_page):
     for product in ProductData.products_data:
         name = product["name"]
         price = product["price"]
@@ -41,10 +34,7 @@ def test_id_002_products_list_displayed(driver):
             f"{name}"
         )
 
-def test_id_003_click_product_move_to_detail(driver):
-    product_page = ProductPage(driver)
-    detail_page = ProductDetailPage(driver)
-
+def test_id_003_click_product_move_to_detail(product_page, detail_page):
     for product in ProductData.products_data:
         name = product["name"]
         price = product["price"]
@@ -70,8 +60,7 @@ def test_id_003_click_product_move_to_detail(driver):
 
         detail_page.go_back()
 
-def test_id_004_click_review_star(driver):
-    product_page = ProductPage(driver)
+def test_id_004_click_review_star(product_page):
 
     for product in ProductData.products_data:
         for i in range(1, 6):
@@ -84,18 +73,14 @@ def test_id_004_click_review_star(driver):
 
             product_page.click_close_modal()
 
-def test_id_005_check_sort_menu(driver):
-    product_page = ProductPage(driver)
-
+def test_id_005_check_sort_menu(product_page):
     product_page.click_sort_button()
 
     for sort_name in SortMenu.button_names:
         assert product_page.check_sort_menu(sort_name) is True, \
             f"[F] {sort_name} Sort menu box undisplayed"
 
-def test_id_005_click_name_ascending(driver):
-    product_page = ProductPage(driver)
-
+def test_id_005_click_name_ascending(product_page):
     expected = sorted(
         [product["name"] for product in ProductData.products_data],
         key= str.lower
@@ -115,9 +100,7 @@ def test_id_005_click_name_ascending(driver):
         f"Actual={actual_names}"
     )
 
-def test_id_006_click_name_descending(driver):
-    product_page = ProductPage(driver)
-
+def test_id_006_click_name_descending(product_page):
     expected = sorted(
         [product["name"] for product in ProductData.products_data],
         key= str.lower,
@@ -138,9 +121,7 @@ def test_id_006_click_name_descending(driver):
         f"Actual={actual_names}"
     )
 
-def test_id_007_click_price_ascending(driver):
-    product_page = ProductPage(driver)
-
+def test_id_007_click_price_ascending(product_page):
     expected = [
         product["name"]
         for product in sorted(
@@ -165,9 +146,7 @@ def test_id_007_click_price_ascending(driver):
         f"Actual={actual_names}"
     )
 
-def test_id_008_click_price_descending(driver):
-    product_page = ProductPage(driver)
-
+def test_id_008_click_price_descending(product_page):
     expected = [
             product["name"]
             for product in sorted(
@@ -192,165 +171,224 @@ def test_id_008_click_price_descending(driver):
         f"Actual={actual_names}"
     )
 
-def test_id_009_click_side_menu(driver):
-    product_page = ProductPage(driver)
-
+def test_id_009_click_side_menu(product_page):
     product_page.open_side_menu()
 
     for button_names in SideMenu.button_names:
         assert product_page.check_side_menu(button_names) is True, \
         f"{button_names} Side menu undisplayed"
 
-def test_id_010_click_side_menu_buttons(driver):
-    product_page = ProductPage(driver)
-    app_page = AppPage(driver)
-    login_page = LoginPage(driver)
-    detail_page = ProductDetailPage(driver)
+def test_id_010_click_catalog_button(product_page, app_page):
     expected_title_name = ContainerHeader.names
+    catalog_button = SideMenu.button_data["Catalog"]["locator_name"]
 
-    for button in SideMenu.button_names:
-        if button["name"] == "Reset":
-            product = ProductData.products_data[0]
-            name = product["name"]
+    product_page.open_side_menu()
+    product_page.click_menu(catalog_button)
 
-            menu_catalog_button = next(
-                item for item in SideMenu.button_names
-                if item["name"] == "Catalog"
-            )
-            print(f"{menu_catalog_button["name"]}")
-            product_page.open_side_menu()
-            product_page.click_menu(menu_catalog_button["locator_name"])
+    actual_title_name = app_page.get_title_name()
 
-            card = product_page.find_product_card(name)
-            product_page.click_product(card)
+    assert product_page.catalog_displayed() is True, \
+        "[F] product page undisplayed"
 
-            detail_page.click_add_cart()
-            detail_page.go_back()
+    assert expected_title_name[0] == actual_title_name, \
+        "[F] product page title is wrong"
 
-            product_page.open_side_menu()
-            product_page.click_menu(button["locator_name"])
-        
-        elif button["name"] == "Logout":
-            username = AccountData.vaild_user["username"]
-            password = AccountData.vaild_user["password"]
 
-            menu_login_button = next(
-                item for item in SideMenu.button_names
-                if item["name"] == "Login"
-            )
-            product_page.open_side_menu()
-            product_page.click_menu(menu_login_button["locator_name"])
-            
-            login_page.login(username, password)
-            
-            product_page.open_side_menu()
-            product_page.click_menu(button["locator_name"])
+def test_id_011_click_webview_button(product_page, app_page):
+    expected_title_name = ContainerHeader.names
+    webview_button = SideMenu.button_data["Webview"]["locator_name"]
+    product_page.open_side_menu()
+    product_page.click_menu(webview_button)
 
-        else:
-            product_page.open_side_menu()
-            product_page.click_menu(button["locator_name"])
+    actual_title_name = app_page.get_title_name()
 
-        match button["name"]:
-            case "Catalog":
-                actual_title_name = app_page.get_title_name()
+    assert expected_title_name[1] == actual_title_name, \
+        "[F] Webview page undisplayed"
 
-                assert product_page.catalog_displayed() is True, \
-                "[F] product page undisplayed"
-                assert expected_title_name[0] == actual_title_name, \
-                "[F] product page title is wrong"
-            
-            case "Webview":
-                actual_title_name = app_page.get_title_name()
 
-                assert expected_title_name[1] == actual_title_name, \
-                "[F] Webview page undisplayed"
+def test_id_012_click_qr_scan_button(product_page, app_page):
+    expected_title_name = ContainerHeader.names
+    qr_scan_button = SideMenu.button_data["QR Scan"]["locator_name"]
 
-            case "QR Scan":
-                if app_page.permission_message_is_displayed() is True:
-                    app_page.click_only_this_time()
+    product_page.open_side_menu()
+    product_page.click_menu(qr_scan_button)
 
-                if app_page.google_message_is_displayed() is True:
-                    app_page.click_agree_button()
+    if app_page.permission_message_is_displayed() is True:
+        app_page.click_only_this_time()
 
-                actual_title_name = app_page.get_title_name()
+    if app_page.google_message_is_displayed() is True:
+        app_page.click_agree_button()
 
-                assert expected_title_name[2] == actual_title_name, \
-                "[F] QR Scan page undisplayed"
-            
-            case "Geo Location":
-                if app_page.permission_message_is_displayed() is True:
-                    app_page.click_only_this_time()
+    actual_title_name = app_page.get_title_name()
 
-                if app_page.google_message_is_displayed() is True:
-                    app_page.click_agree_button()
+    assert expected_title_name[2] == actual_title_name, \
+        "[F] QR Scan page undisplayed"
 
-                actual_title_name = app_page.get_title_name()
 
-                assert expected_title_name[3] == actual_title_name, \
-                "[F] Geo Location page undisplayed"
-            
-            case "Drawing":
-                actual_title_name = app_page.get_title_name()
-                
-                assert expected_title_name[4] == actual_title_name, \
-                "[F] Drawing page undisplayed"
-            
-            case "About":
-                actual_title_name = app_page.get_title_name()
+def test_id_013_click_geo_location_button(product_page, app_page):
+    expected_title_name = ContainerHeader.names
+    Geo_location_button = SideMenu.button_data["Geo Location"]["locator_name"]
 
-                assert expected_title_name[5] == actual_title_name, \
-                "[F] About page undisplayed"
-            
-            case "Reset":
-                app_page.alert_message_is_displayed()
-                app_page.click_agree_button()
+    product_page.open_side_menu()
+    product_page.click_menu(Geo_location_button)
 
-                app_page.alert_message_is_displayed()
-                app_page.click_agree_button()
-                app_page.go_back()
+    if app_page.permission_message_is_displayed() is True:
+        app_page.click_only_this_time()
 
-                cart_badge_count = product_page.check_cart_count()
+    if app_page.google_message_is_displayed() is True:
+        app_page.click_agree_button()
 
-                assert cart_badge_count is False, \
-                "[F] Failed Reset App State"
-            
-            case "Finger Print":
-                if app_page.alert_message_is_displayed() is True:
-                    app_page.click_agree_button()
+    actual_title_name = app_page.get_title_name()
 
-                actual_title_name = app_page.get_title_name()
+    assert expected_title_name[3] == actual_title_name, \
+        "[F] Geo Location page undisplayed"
 
-                assert expected_title_name[6] == actual_title_name, \
-                "[F] Finger Print page undisplayed"
-            
-            case "Login":
-                actual_title_name = login_page.get_title_name()
-                assert expected_title_name[7] == actual_title_name, \
-                "[F] Finger Print page undisplayed"
-            
-            case "Logout":
-                if app_page.alert_message_is_displayed():
-                    app_page.click_agree_button()
 
-                if app_page.alert_message_is_displayed():
-                    app_page.click_agree_button()
+def test_id_014_click_drawing_button(product_page, app_page):
+    expected_title_name = ContainerHeader.names
+    drawing_button = SideMenu.button_data["Drawing"]["locator_name"]
 
-                actual_title_name = login_page.get_title_name()
+    product_page.open_side_menu()
+    product_page.click_menu(drawing_button)
 
-                assert expected_title_name[7] == actual_title_name, \
-                "[F] Failed LogOut"
-            
-            case "Api Calls":
-                actual_title_name = app_page.get_title_name()
+    actual_title_name = app_page.get_title_name()
 
-                assert expected_title_name[8] == actual_title_name, \
-                "[F] Finger Print page undisplayed"
-            
-            case "Bot Video":
-                actual_title_name = app_page.get_title_name()
+    assert expected_title_name[4] == actual_title_name, \
+        "[F] Drawing page undisplayed"
 
-                assert expected_title_name[9] == actual_title_name, \
-                "[F] Finger Print page undisplayed"
 
-            case _:
-                raise ValueError(f"Button click failed: {button["name"]}")
+def test_id_015_click_about_button(product_page, app_page):
+    expected_title_name = ContainerHeader.names
+    about_button = SideMenu.button_data["About"]["locator_name"]
+
+    product_page.open_side_menu()
+    product_page.click_menu(about_button)
+
+    actual_title_name = app_page.get_title_name()
+
+    assert expected_title_name[5] == actual_title_name, \
+        "[F] About page undisplayed"
+
+
+def test_id_016_click_reset_button(
+    product_page,
+    app_page,
+    detail_page
+):
+    product = ProductData.products_data[0]
+    name = product["name"]
+    catalog_button = SideMenu.button_data["Catalog"]["locator_name"]
+    reset_button = SideMenu.button_data["Reset"]["locator_name"]
+
+    product_page.open_side_menu()
+    product_page.click_menu(catalog_button)
+
+    card = product_page.find_product_card(name)
+    product_page.click_product(card)
+
+    detail_page.click_add_cart()
+    detail_page.go_back()
+
+    product_page.open_side_menu()
+    product_page.click_menu(reset_button)
+
+    app_page.alert_message_is_displayed()
+    app_page.click_agree_button()
+
+    app_page.alert_message_is_displayed()
+    app_page.click_agree_button()
+
+    app_page.go_back()
+
+    product_page.find_cart_badge()
+    cart_badge_count = product_page.check_cart_count()
+
+    assert cart_badge_count is False, \
+        "[F] Failed Reset App State"
+
+
+def test_id_017_click_finger_print_button(product_page, app_page):
+    expected_title_name = ContainerHeader.names
+    finger_print_button = SideMenu.button_data["Finger Print"]["locator_name"]
+
+    product_page.open_side_menu()
+    product_page.click_menu(finger_print_button)
+
+    if app_page.alert_message_is_displayed() is True:
+        app_page.click_agree_button()
+
+    actual_title_name = app_page.get_title_name()
+
+    assert expected_title_name[6] == actual_title_name, \
+        "[F] Finger Print page undisplayed"
+
+
+def test_id_018_click_login_button(product_page, login_page):
+    expected_title_name = ContainerHeader.names
+    login_button = SideMenu.button_data["Login"]["locator_name"]
+
+    product_page.open_side_menu()
+    product_page.click_menu(login_button)
+
+    actual_title_name = login_page.get_title_name()
+
+    assert expected_title_name[7] == actual_title_name, \
+        "[F] login page undisplayed"
+
+
+def test_id_019_click_logout_button(
+    product_page,
+    app_page,
+    login_page
+):
+    expected_title_name = ContainerHeader.names
+    login_button = SideMenu.button_data["Login"]["locator_name"]
+    logout_button = SideMenu.button_data["Logout"]["locator_name"]
+
+    username = AccountData.vaild_user["username"]
+    password = AccountData.vaild_user["password"]
+
+    product_page.open_side_menu()
+    product_page.click_menu(login_button)
+
+    login_page.login(username, password)
+
+    product_page.open_side_menu()
+    product_page.click_menu(logout_button)
+
+    if app_page.alert_message_is_displayed():
+        app_page.click_agree_button()
+
+    if app_page.alert_message_is_displayed():
+        app_page.click_agree_button()
+
+    actual_title_name = login_page.get_title_name()
+
+    assert expected_title_name[7] == actual_title_name, \
+        "[F] Failed LogOut"
+
+
+def test_id_020_click_api_calls_button(product_page, app_page):
+    expected_title_name = ContainerHeader.names
+    api_calls_button = SideMenu.button_data["API Calls"]["locator_name"]
+
+    product_page.open_side_menu()
+    product_page.click_menu(api_calls_button)
+
+    actual_title_name = app_page.get_title_name()
+
+    assert expected_title_name[8] == actual_title_name, \
+        "[F] API calls page undisplayed"
+
+
+def test_id_021_click_bot_video_button(product_page, app_page):
+    expected_title_name = ContainerHeader.names
+    bot_video_button = SideMenu.button_data["Bot Video"]["locator_name"]
+
+    product_page.open_side_menu()
+    product_page.click_menu(bot_video_button)
+
+    actual_title_name = app_page.get_title_name()
+
+    assert expected_title_name[9] == actual_title_name, \
+        "[F] Bot video page undisplayed"

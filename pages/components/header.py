@@ -1,8 +1,7 @@
 from appium.webdriver.common.appiumby import AppiumBy
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import TimeoutException
-from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
 from pages.base import BasePage
 
 class Header(BasePage):
@@ -43,13 +42,32 @@ class Header(BasePage):
         )
         cart_badge.click()
 
+    def find_side_menu_button(self):
+        locator = self._get_locator("menu_button")
+
+        for attempt in range(3):
+            try:
+                return self.wait.until(
+                    EC.presence_of_element_located(locator)
+                )
+            except TimeoutException:
+                if attempt == 2:
+                    raise
+
     def click_side_menu(self):
-        side_menu_button = self.wait.until(
-            EC.element_to_be_clickable(
-                self._get_locator("menu_button")
-            )
-        )
-        side_menu_button.click()
+        locator = self._get_locator("menu_button")
+
+        for attempt in range(3):
+            try:
+                element = self.wait.until(
+                    EC.element_to_be_clickable(locator)
+                )
+                element.click()
+                return
+
+            except StaleElementReferenceException:
+                if attempt == 2:
+                    raise
 
     def get_cart_count(self):
         badge = self.wait.until(
@@ -162,10 +180,10 @@ class SideMenuButton(BasePage):
     # Action
 
     def find_side_buttons(self, button_name):
-            element = self.find_element(self._get_locator(button_name))
-            print(f"[DEBUG] {button_name}: {element is not None}")
-    
-            return element
+        element = self.find_element(self._get_locator(button_name))
+        print(f"[DEBUG] {button_name}: {element is not None}")
+
+        return element
     
     def click_menu(self, names):
         locator = self._get_locator(names)
